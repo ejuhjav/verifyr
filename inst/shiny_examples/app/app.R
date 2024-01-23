@@ -61,7 +61,7 @@ ui <- shiny::fluidPage(
           shiny::actionButton("save_comments", "Save comments"),
           shiny::actionButton("clear_comments", "Clear comments"),
         ),
-        class = "comparison_comments",
+        id = "comparison_comments_container",
       ),
     ),
   ),
@@ -116,7 +116,7 @@ server <- function(input, output, session) {
 
   list_of_files <- shiny::eventReactive(input$go, {
     if (file.exists(input$old_folder) && file.exists(input$new_folder)) {
-      shinyjs::runjs("$('.comparison_comments').hide();")
+      set_visibility("comparison_comments_container", FALSE)
       shinyjs::runjs("$('#download_csv').css('display', 'inline-block');")
       set_reactive_text("initial_text", "")
       verifyr::list_files(input$old_folder, input$new_folder, input$file_name_patter)
@@ -178,7 +178,7 @@ server <- function(input, output, session) {
       shiny::updateTextAreaInput(session, "full_out_comments", value = row_comment)
     }
 
-    shinyjs::runjs("$('.comparison_comments').show();")
+    set_visibility("comparison_comments_container", TRUE)
 
     sel_row_index <<- new_row_index
     sel_row <- initial_verify()[new_row_index, ]
@@ -193,6 +193,11 @@ server <- function(input, output, session) {
   # ===============================================================================================
   # Helper functions
   # ===============================================================================================
+
+  set_visibility <- function(id, visible) {
+    visible_text <- ifelse(visible, "show()", "hide()")
+    shinyjs::runjs(paste0("$('#", id, "').", visible_text))
+  }
 
   set_reactive_text <- function(reactive_id, text, class = "") {
     do.call(reactive_id, list(text))

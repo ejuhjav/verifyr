@@ -22,11 +22,7 @@
     cursor: pointer;
 }
 
-#initial_out td.selected_custom {
-    background-color: yellow;
-}
-
-.comparison_comments {
+#comparison_comments_container {
     display: none;
     margin-top: 20px;
 }
